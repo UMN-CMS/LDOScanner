@@ -1,45 +1,96 @@
 <script lang="ts">
-  export let name: string = "WORLD";
+    import BarcodeBox from './BarcodeBox.svelte';
+    import BarcodeScanner from './BarcodeScanner.svelte';
+    import { config } from '$lib/config.ts';
 
-  function toggleName(){
-    if (name == "WORLD") {
-      name = "OTHER";
-      
-    } else {
-      name = "WORLD";
+    let engine_barcode = null;
+    let ldo_barcode = null;
+    let is_engine_code_valid = true;
+    let is_ldo_code_valid = true;
+    let engine_code_regex= /320E[LH]*/;
+    let ldo_code_regex= /LDO*/;
+    let ok_to_submit = false;
+
+    let barcode_scanner;
+    async function handleRequestScan(request) {
+	    console.log(request);
+	    await barcode_scanner.start(request.detail.type);
     }
 
-  }
+    async function handleSubmit() {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        const response = await fetch(config.add_component_url, {
+            method: "POST",
+            body: JSON.stringify({
+                barcode: engine_barcode,
+                full_id: ldo_barcode,
+            }),
+            headers: myHeaders,
+        });
+
+
+
+	    engine_barcode = null;
+	    ldo_barcode = null;
+
+        console.log(resonse)
+
+    }
+
+    function handleScanned(request) {
+	    let data = request.detail;
+	    console.log(data);
+	    const t = data;
+	    if (data.request === 'Engine') {
+		    engine_barcode = t.value;
+            is_engine_code_valid = engine_code_regex.test(engine_barcode)
+	    } else {
+		    ldo_barcode = t.value;
+            is_ldo_code_valid = ldo_code_regex.test(ldo_barcode)
+	    }
+        console.log(engine_barcode)
+        console.log(ldo_barcode)
+    }
+
+    $: {
+        ok_to_submit = engine_barcode !== null
+                    && ldo_barcode !== null
+                    && is_engine_code_valid
+                    && is_ldo_code_valid
+        
+    }
+
+    
 </script>
 
 <main>
-  <h1>Hello {name}!</h1>
-  
-  <button on:click="{toggleName}"> Click Me</button>
-  <p>
-    Visit the <a href="https://learn.svelte.dev/">Svelte tutorial</a> to learn
-    how to build Svelte apps.
-  </p>
+    <section class="section">
+		<div class="">
+			<BarcodeScanner on:barcode_scanned={handleScanned} bind:this={barcode_scanner} />
+		</div>
+	    <div class="columns is-multiline is-6">
+		    <div class="column is-one-half">
+			    <BarcodeBox
+				    on:request_scan={handleRequestScan}
+				    barcode={engine_barcode}
+				    component_type={'Engine'}
+                    is_valid={is_engine_code_valid}
+			    />
+		    </div>
+		    <div class="column is-one-half">
+			    <BarcodeBox
+				    on:request_scan={handleRequestScan}
+				    barcode={ldo_barcode}
+				    component_type={'LDO'}
+                    is_valid={is_ldo_code_valid}
+			    />
+		    </div>
+		    <div class="column is-full">
+                <button disabled={!ok_to_submit} class="button is-success is-fullwidth" on:click={handleSubmit}>Submit</button>
+            </div>
+	    </div>
+
+    </section>
 </main>
-
-<style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
-  }
-
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
-  }
-
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
-  }
-</style>
