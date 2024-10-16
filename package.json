@@ -29,5 +29,9 @@
 		"typescript-eslint": "^8.0.0",
 		"vite": "^5.0.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@zxing/library": "^0.21.3",
+		"bulma": "^1.0.2"
+	}
 }

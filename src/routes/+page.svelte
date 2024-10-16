@@ -1,25 +1,35 @@
 <script lang="ts">
-  export let name: string = "WORLD";
+  import { BrowserMultiFormatReader, BarcodeFormat } from '@zxing/library';
+  const codeReader = new BrowserMultiFormatReader()
 
-  function toggleName(){
-    if (name == "WORLD") {
-      name = "OTHER";
-      
-    } else {
-      name = "WORLD";
-    }
+  let selected_device;
+  console.log('ZXing code reader initialized')
 
+  async function getDevices(){
+    let devices = await codeReader.listVideoInputDevices()
+    console.log(devices)
+    return devices
   }
-</script>
 
-<main>
-  <h1>Hello {name}!</h1>
   
-  <button on:click="{toggleName}"> Click Me</button>
-  <p>
-    Visit the <a href="https://learn.svelte.dev/">Svelte tutorial</a> to learn
-    how to build Svelte apps.
-  </p>
+</script>
+<main>
+
+  <select bind:value={selected_device}>
+    {#await getDevices() }
+		<option value={null}>
+          Loading Available Video Devices...
+		</option>
+    {:then devices}
+	  {#each devices as device}
+		<option value={device}>
+		  {device.label}
+		</option>
+	  {/each}
+    {:catch someError}
+	  System error: {someError.message}.
+    {/await}
+  </select>
 </main>
 
 <style>
