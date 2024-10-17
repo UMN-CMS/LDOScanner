@@ -29,6 +29,7 @@
  }
 
  async function getDevices() {
+     await navigator.mediaDevices.getUserMedia({video: true, audio: false});
 	 let devices = await code_reader.listVideoInputDevices();
      no_cameras = devices.length === 0;
 	 return devices;
@@ -101,43 +102,44 @@
 </script>
 
 <!-- <main> -->
-    {#if no_cameras }
-        <div class="notification is-danger is-centered">
-            Could not find any usable cameras.
-            <!-- <button class="delete"></button> -->
-        </div>
-    {/if}
-    {#if isRunning() }
+{#if no_cameras }
+    <div class="notification is-danger is-centered">
+        Could not find any usable cameras.
+        <!-- <button class="delete"></button> -->
+    </div>
+{/if}
+{#if isRunning() }
 
-	    <div>
-	        <video bind:this={video_element} id="video" width="300" height="200" style="border: 1px solid gray"></video>
-	    </div>
-	    <select bind:value={selected_device_id} on:change={onSelectDevice}>
-	        {#await promise}
-		        <option value={null}> Loading Available Video Devices... </option>
-	        {:then devices}
-		        {#if devices.length > 0}
-		            {#each devices as device}
-			            <option value={device.id}>
-			                {device.label}
-			            </option>
-		            {/each}
-		        {/if}
+	<div>
+	    <video bind:this={video_element} id="video" width="300" height="200" style="border: 1px solid gray"></video>
+	</div>
+
+	<select bind:value={selected_device_id} on:change={onSelectDevice}>
+	    {#await promise}
+		    <option value={null}> Loading Available Video Devices... </option>
+	    {:then devices}
+		    {#if devices.length > 0}
+		        {#each devices as device}
+			        <option value={device.id}>
+			            {device.label}
+			        </option>
+		        {/each}
+		    {/if}
 			{:catch someError}
-		        System error: {someError.message}.
-	        {/await}
-	    </select>
-
-	    {#if selected_device_id !== null}
-	        <button on:click={toggle}> {(isRunning())? "Stop" : "Start"} Decode</button>
-	    {/if}
-
-	    {#await decode_promise}
-	        Please Scan Barcode
-	    {:catch someError}
-	        System error: {someError.message}.
+		    System error: {someError.message}.
 	    {/await}
-    {/if}
-    <!-- <div>  Is Running {isRunning()}
-         </div> -->
-    <!-- </main> -->
+	</select>
+
+	{#if selected_device_id !== null}
+	    <button on:click={toggle}> {(isRunning())? "Stop" : "Start"} Decode</button>
+	{/if}
+
+	{#await decode_promise}
+	    Please Scan Barcode
+	{:catch someError}
+	    System error: {someError.message}.
+	{/await}
+{/if}
+<!-- <div>  Is Running {isRunning()}
+     </div> -->
+<!-- </main> -->

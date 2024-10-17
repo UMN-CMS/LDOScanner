@@ -71,5 +71,6 @@
                 <button class="button is-success is-fullwidth" on:click={handleSubmit}>Submit</button>
             </div>
 	    </div>
+
     </section>
 </main>
