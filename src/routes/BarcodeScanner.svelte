@@ -114,22 +114,23 @@
 	    <video bind:this={video_element} id="video" width="300" height="200" style="border: 1px solid gray"></video>
 	</div>
 
-	<select bind:value={selected_device_id} on:change={onSelectDevice}>
-	    {#await promise}
-		    <option value={null}> Loading Available Video Devices... </option>
-	    {:then devices}
-		    {#if devices.length > 0}
-		        {#each devices as device}
-			        <option value={device.id}>
-			            {device.label}
-			        </option>
-		        {/each}
-		    {/if}
+    <div class="select">
+        <select bind:value={selected_device_id} on:change={onSelectDevice}>
+	        {#await promise}
+		        <option value={null}> Loading Available Video Devices... </option>
+	        {:then devices}
+		        {#if devices.length > 0}
+		            {#each devices as device}
+			            <option value={device.id}>
+			                {device.label}
+			            </option>
+		            {/each}
+		        {/if}
 			{:catch someError}
-		    System error: {someError.message}.
-	    {/await}
-	</select>
-
+		        System error: {someError.message}.
+	        {/await}
+	    </select>
+    </div>
 	{#if selected_device_id !== null}
 	    <button on:click={toggle}> {(isRunning())? "Stop" : "Start"} Decode</button>
 	{/if}
