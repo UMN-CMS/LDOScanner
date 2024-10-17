@@ -25,6 +25,7 @@
  let no_cameras=false;
 
  async function onSelectDevice() {
+     device_id = selected_device_id;
 	 await stop();
  }
 
@@ -36,9 +37,9 @@
  }
 
  let video_element= null;
- async function startDecode(device_id) {
+ async function startDecode() {
      console.log(video_element);
-	 [stream, track] = await makeVideoDevice(selected_device_id);
+	 [stream, track] = await makeVideoDevice(device_id);
      await tick();
 	 const p = new Promise((resolve,reject) => code_reader.decodeFromStream(stream, 'video', (result, err) => {
 	     if (result) {
@@ -70,7 +71,7 @@
 	 console.log(`Starting scan with request ${request}`);
 	 if (isRunning()) stop();
 	 scan_type = request;
-	 startDecode(selected_device_id);
+	 startDecode();
  }
 
 
@@ -131,7 +132,7 @@
 	        {/await}
 	    </select>
     </div>
-	{#if selected_device_id !== null}
+	{#if device_id !== null}
 	    <button on:click={toggle}> {(isRunning())? "Stop" : "Start"} Decode</button>
 	{/if}
 
