@@ -22,6 +22,8 @@
  let promise;
  let decode_promise = null;
  let selected_device_id = null;
+ let device_id=null;
+
  let no_cameras=false;
 
  async function onSelectDevice() {
