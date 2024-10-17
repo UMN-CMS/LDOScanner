@@ -25,6 +25,7 @@
  let device_id=null;
 
  let no_cameras=false;
+ let all_devices= null;
 
  async function onSelectDevice() {
      device_id = selected_device_id;
@@ -75,6 +76,9 @@
 	 console.log(`Starting scan with request ${request}`);
 	 if (isRunning()) stop();
 	 scan_type = request;
+     if (device_id === null){
+         device_id = all_devices[0].deviceId;
+     }
 	 startDecode();
  }
 
@@ -96,7 +100,7 @@
  onMount(() => {
 	 promise = getDevices();
 	 promise.then((vals) => {
-	     console.log(vals);
+         all_devices = vals;
          // if(vals.length>0){
          // 	         selected_device_id = vals[0].deviceId;
          // }
