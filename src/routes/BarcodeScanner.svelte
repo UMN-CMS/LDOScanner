@@ -34,9 +34,15 @@
  }
 
  async function getDevices() {
-     await navigator.mediaDevices.getUserMedia({video: true, audio: false});
-	 let devices = await code_reader.listVideoInputDevices();
-     devices.sort((a,b) => b.label.includes("Back"));
+     console.log("HERE2");
+     try{
+         await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+         console.log("HERE2");
+	     var devices = await code_reader.listVideoInputDevices();
+         devices.sort((a,b) => b.label.includes("Back"));
+     } catch (err){
+         var devices = [];
+     }
      no_cameras = devices.length === 0;
 	 return devices;
  }
@@ -73,13 +79,18 @@
 	 code_reader.reset();
  }
 
-  export async function start(request) {
-	 all_devices = await getDevices();
+ export async function start(request) {
+     console.log("HERE");
+     if(all_devices === null){
+	     all_devices = await getDevices();
+     }
+     console.log(all_devices);
+
 	 console.log(`Starting scan with request ${request}`);
      if(no_cameras){
          console.log("No cameras");
          return;
-         }
+     }
 	 if (isRunning()) stop();
 	 scan_type = request;
      if (device_id === null ){
