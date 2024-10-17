@@ -6,9 +6,9 @@
  let ldo_barcode = null;
 
  let barcode_scanner;
- function handleRequestScan(request) {
+ async function handleRequestScan(request) {
 	 console.log(request);
-	 barcode_scanner.start(request.detail.type);
+	 await barcode_scanner.start(request.detail.type);
  }
 
  async function handleSubmit() {

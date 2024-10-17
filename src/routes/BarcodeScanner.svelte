@@ -72,12 +72,18 @@
 	 code_reader.reset();
  }
 
- export function start(request) {
+  export async function start(request) {
+	 all_devices = await getDevices();
 	 console.log(`Starting scan with request ${request}`);
+     if(no_cameras){
+         console.log("No cameras");
+         return;
+         }
 	 if (isRunning()) stop();
 	 scan_type = request;
-     if (device_id === null){
+     if (device_id === null ){
          device_id = all_devices[0].deviceId;
+         selected_device_id = all_devices[0].deviceId;
      }
 	 startDecode();
  }
