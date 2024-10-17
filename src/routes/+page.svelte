@@ -20,11 +20,13 @@
 		let data = request.detail;
 		console.log(data);
 		const t = data;
-		if (data.request == 'Engine') {
+		if (data.request === 'Engine') {
 			engine_barcode = t.value;
 		} else {
 			ldo_barcode = t.value;
 		}
+        console.log(engine_barcode)
+        console.log(ldo_barcode)
 	}
 </script>
 
@@ -36,15 +38,15 @@
 		<div class="column is-full">
 			<BarcodeBox
 				on:request_scan={handleRequestScan}
-				barcode={engine_barcode}
-				component_type={'Engine'}
+				                barcode={engine_barcode}
+				                component_type={'Engine'}
 			/>
 		</div>
 		<div class="column is-full">
 			<BarcodeBox
 				on:request_scan={handleRequestScan}
-				barcode={ldo_barcode}
-				component_type={'LDO'}
+				                barcode={ldo_barcode}
+				                component_type={'LDO'}
 			/>
 		</div>
 		<div class="column is-full"><button class="button" on:click={handleSubmit}>Submit</button></div>
