@@ -36,6 +36,7 @@
  async function getDevices() {
      await navigator.mediaDevices.getUserMedia({video: true, audio: false});
 	 let devices = await code_reader.listVideoInputDevices();
+     devices.sort((a,b) => b.label.includes("Back"));
      no_cameras = devices.length === 0;
 	 return devices;
  }
@@ -103,16 +104,6 @@
      
  }
 
- onMount(() => {
-	 promise = getDevices();
-	 promise.then((vals) => {
-         all_devices = vals;
-         // if(vals.length>0){
-         // 	         selected_device_id = vals[0].deviceId;
-         // }
-	     onSelectDevice();
-	 });
- });
 
 </script>
 
