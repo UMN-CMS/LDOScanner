@@ -84,7 +84,7 @@
 	 scan_type = request;
      if (device_id === null ){
          device_id = all_devices[0].deviceId;
-         selected_device_id = all_devices[0].deviceId;
+         //selected_device_id = all_devices[0].deviceId;
      }
 	 startDecode();
  }
