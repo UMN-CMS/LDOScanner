@@ -40,6 +40,7 @@
  }
 
  let video_element= null;
+
  async function startDecode() {
      console.log(video_element);
 	 [stream, track] = await makeVideoDevice(device_id);
@@ -96,9 +97,9 @@
 	 promise = getDevices();
 	 promise.then((vals) => {
 	     console.log(vals);
-         if(vals.length>0){
-	         selected_device_id = vals[0].deviceId;
-         }
+         // if(vals.length>0){
+         // 	         selected_device_id = vals[0].deviceId;
+         // }
 	     onSelectDevice();
 	 });
  });
