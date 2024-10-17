@@ -22,9 +22,11 @@
 	    <div class="mt-1 mb-1 pt-1 pb-1 block column is-one-third has-text-centered">
 		    <span class="is-size-5 is-text-centered"> {component_type} </span>
 	    </div>
+        {#if barcode !== null }
 	    <div class="mt-1 mb-1 pt-1 pb-1 block column is-one-third has-text-centered">
 		    <span class="is-size-6"> {barcode} </span>
 	    </div>
+        {/if}
 	    <div class="is-narrow">
 		    <button class="button is-fullwidth" on:click={requestScan}>
 			    {#if barcode === null}
