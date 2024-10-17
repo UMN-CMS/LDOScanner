@@ -29,8 +29,6 @@
 
  async function onSelectDevice() {
      device_id = selected_device_id;
-	 await stop();
-	 await startDecode();
  }
 
  async function getDevices() {
@@ -50,6 +48,7 @@
  let video_element= null;
 
  async function startDecode() {
+	 await stop();
      console.log(video_element);
 	 [stream, track] = await makeVideoDevice(device_id);
      await tick();
