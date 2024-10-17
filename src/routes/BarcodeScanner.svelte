@@ -29,6 +29,7 @@
 
  async function onSelectDevice() {
      device_id = selected_device_id;
+     startDecode();
  }
 
  async function getDevices() {
