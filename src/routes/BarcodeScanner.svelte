@@ -29,6 +29,7 @@
  async function onSelectDevice() {
      device_id = selected_device_id;
 	 await stop();
+	 await startDecode();
  }
 
  async function getDevices() {
@@ -104,11 +105,9 @@
 
 </script>
 
-<!-- <main> -->
 {#if no_cameras }
     <div class="notification is-danger is-centered">
         Could not find any usable cameras.
-        <!-- <button class="delete"></button> -->
     </div>
 {/if}
 {#if isRunning() }
