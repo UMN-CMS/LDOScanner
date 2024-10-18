@@ -134,7 +134,7 @@
                     <div class="select">
                         <select bind:value={selected_device_id} on:change={onSelectDevice}>
 		                    {#each all_devices as device}
-			                    <option value={device.id}>
+			                    <option value={device.deviceId}>
 			                        {device.label}
 			                    </option>
 		                    {/each}
