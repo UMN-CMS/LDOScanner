@@ -1,9 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    export let regex = null;
+    export let is_loading = false;
     export let component_type;
     export let barcode = null;
     export let is_valid = null;
+
     let dispatcher = createEventDispatcher();
 
     function requestScan() {
@@ -30,16 +31,12 @@
 </script>
 
 <div class="box p-6 {box_color}">
-    <div class="columns is-vcentered">
-	    <div class="mt-1 mb-1 pt-1 pb-1 block column is-one-third has-text-centered">
+    <div class="block columns is-vcentered is-centered ">
+	    <div class="column is-text-centered ">
 		    <span class="is-size-5 is-text-centered"> {component_type} </span>
 	    </div>
-        {#if barcode !== null }
-	        <div class="mt-1 mb-1 pt-1 pb-1 block column is-one-third has-text-centered">
-		        <span class="is-size-6"> {barcode} </span>
-	        </div>
-        {/if}
-	    <div class="is-narrow">
+
+	    <div class="column is-narrow">
 		    <button class="button is-fullwidth" on:click={requestScan}>
 			    {#if barcode === null}
 				    Scan Barcode
@@ -47,6 +44,16 @@
 				    Rescan Barcode
 			    {/if}
 		    </button>
-	    </div>
+        </div>
     </div>
+    {#if barcode !== null || is_loading }
+        <div class="columns">
+            <div class="column">
+                <div class="control" class:is-loading={is_loading}>
+                    <input class="input" type="text" value="{barcode}" readonly disabled/>
+                </div>
+                <!-- <span class="is-size-6"> {barcode} </span> -->
+	        </div>
+        </div>
+    {/if}
 </div>

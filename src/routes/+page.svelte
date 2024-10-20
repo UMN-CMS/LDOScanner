@@ -11,7 +11,11 @@
     let ldo_code_regex= /LDO*/;
     let ok_to_submit = false;
 
-    let barcode_scanner;
+    let is_decoding_engine = false;
+    let is_decoding_ldo = false;
+
+    let barcode_scanner = null;
+
     async function handleRequestScan(request) {
 	    console.log(request);
 	    await barcode_scanner.start(request.detail.type);
@@ -37,6 +41,14 @@
 
         console.log(resonse)
 
+    }
+
+    let is_decoding=false;
+    function isRunningHandler(r){
+        is_decoding_engine =false;
+        is_decoding_ldo =false;
+        if(r === "Engine"){is_decoding_engine =true;}
+        if(r === "LDO"){is_decoding_ldo =true;}
     }
 
     function handleScanned(request) {
@@ -68,7 +80,11 @@
 <main>
     <section class="section">
 		<div class="">
-			<BarcodeScanner on:barcode_scanned={handleScanned} bind:this={barcode_scanner} />
+			<BarcodeScanner
+                on:barcode_scanned={handleScanned}
+                bind:this={barcode_scanner}
+                is_running_handler={isRunningHandler}
+            />
 		</div>
 	    <div class="columns is-multiline is-6">
 		    <div class="column is-one-half">
@@ -77,6 +93,7 @@
 				    barcode={engine_barcode}
 				    component_type={'Engine'}
                     is_valid={is_engine_code_valid}
+                    is_loading={is_decoding_engine}
 			    />
 		    </div>
 		    <div class="column is-one-half">
@@ -85,6 +102,7 @@
 				    barcode={ldo_barcode}
 				    component_type={'LDO'}
                     is_valid={is_ldo_code_valid}
+                    is_loading={is_decoding_ldo}
 			    />
 		    </div>
 		    <div class="column is-full">
