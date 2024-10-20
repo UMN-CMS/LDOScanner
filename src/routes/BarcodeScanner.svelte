@@ -130,8 +130,7 @@
     }
 
 </script>
-
-{#if !hasCamera() }
+{#if !hasCamera()}
     <div class="notification is-danger is-centered">
         Could not find any usable cameras.
     </div>
