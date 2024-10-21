@@ -4,6 +4,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
 	preprocess: vitePreprocess(),
 
+
 	kit: {
 		adapter: adapter({
 			pages: 'build',
@@ -11,7 +12,8 @@ const config = {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
+		}
+        ),
 	}
 };
 
