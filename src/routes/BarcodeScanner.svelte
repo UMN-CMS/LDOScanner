@@ -37,12 +37,23 @@
 	    return all_devices;
     }
 
+
+ async function zoomTrackTo(track, value){
+     try {
+         const constraints = {advanced: [{"zoom": value}]};
+         await track.applyConstraints(constraints);
+     } catch (err) {
+         console.error('applyConstraints() failed: ', err);
+     }
+ }
+
+
     async function makeVideoDevice(device_id) {
-        console.log(device_id);
 	    const video_constraints = { deviceId: { exact: selected_device_id } };
 	    const constraints = { video: video_constraints };
 	    const stream = await navigator.mediaDevices.getUserMedia(constraints);
 	    const [track] = await stream.getVideoTracks();
+        await zoomTrackTo(track, 100);
 	    return [stream, track];
     }
 
@@ -56,11 +67,9 @@
 
 	    const p = new Promise((resolve,reject) => code_reader.decodeFromStream(stream, 'video', (result, err) => {
 	        if (result) {
-		        console.log(result);
 		        resolve(result);
 	        }
 	        if (err && !(err instanceof NotFoundException)) {
-		        console.log(err)
 		        resolve(null)
 	    }}));
 
@@ -81,12 +90,9 @@
     }
 
     export async function start(request) {
-        console.log("HERE");
         if(all_devices === null){
 	        all_devices = await getAllDevices();
         }
-        console.log(all_devices);
-	    console.log(`Starting scan with request ${request}`);
         if(!hasCamera()) return;
 	    if (isRunning()) await stop();
         if (selected_device_id === null){
