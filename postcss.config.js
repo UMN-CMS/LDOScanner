@@ -1,11 +1,5 @@
 import purgecss from '@fullhuman/postcss-purgecss';
 
-const config = {
-  plugins: [
-    purgecss({
-        content: ['./**/*.html', './**/*.svelte']
-    })
-  ]
-}
+const config = {}
 
 export default config;
