@@ -39,31 +39,33 @@
         data.append('full_id', engine_barcode);
 
 
-        const response = await fetch(config.add_component_url, {
-            method: "POST",
-            body: data,
-        });
+        try{
+            const response = await fetch(config.add_component_url, {
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+                method: "POST",
+                body: data,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+	        engine_barcode = null;
+	        ldo_barcode = null;
+
+
+            const text = await response.text();
+            const resp = text.split("Begin")[1].split("End")[0].trim()
+            let opts = null;
+            if (resp.includes("Error")){
+                opts = nok_opts;
+            } else {
+                opts = ok_opts;
+            }
+            toast.push(resp, opts)
+        } catch (err){
+            toast.push(err.toString(), nok_opts)
         }
-
-	    engine_barcode = null;
-	    ldo_barcode = null;
-
-
-        const text = await response.text();
-        const resp = text.split("Begin")[1].split("End")[0].trim()
-        console.log(resp);
-
-        if (resp.includes("Error")){
-            var opts = nok_opts;
-        } else {
-            var opts = ok_opts;
-        }
-
-        toast.push(resp, opts)
-
     }
 
     let is_decoding=false;
@@ -80,15 +82,9 @@
 	    const t = data;
 	    if (data.request === 'Engine') {
 		    engine_barcode = t.value;
-            //is_engine_code_valid = engine_code_regex.test(engine_barcode)
 	    } else {
 		    ldo_barcode = t.value;
-            //is_ldo_code_valid = ldo_code_regex.test(ldo_barcode)
 	    }
-        console.log(engine_barcode)
-
-
-        console.log(ldo_barcode)
     }
 
 
@@ -105,8 +101,6 @@
                     && is_ldo_code_valid
         
     }
-
-    
 </script>
 
 
@@ -142,7 +136,6 @@
 			    />
 		    </div>
 		    <div class="column is-full">
-                <!-- <button disabled={!ok_to_submit} class="button is-success is-fullwidth" on:click={handleSubmit}>Submit</button> -->
                 <button disabled={!ok_to_submit} class="button is-success is-fullwidth" on:click={handleSubmit}>Submit</button>
             </div>
 	    </div>
