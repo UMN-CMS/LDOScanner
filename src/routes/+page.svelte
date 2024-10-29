@@ -8,8 +8,8 @@
     let ldo_barcode = null;
     let is_engine_code_valid = true;
     let is_ldo_code_valid = true;
-    let engine_code_regex= /320E[LH]*/;
-    let ldo_code_regex= /LDO*/;
+    let engine_code_regex= /320E[LH]/;
+    let ldo_code_regex= /LDO/;
     let ok_to_submit = false;
 
     let is_decoding_engine = false;
