@@ -8,12 +8,12 @@
   let dispatcher = createEventDispatcher();
 
   function requestScan() {
-	console.log('HERE');
-	dispatcher('request_scan', { type: component_type });
+    console.log('HERE');
+    dispatcher('request_scan', { type: component_type });
   }
 
   export function reset() {
-	barcode = null;
+    barcode = null;
   }
 
 
@@ -32,18 +32,18 @@
 
 <div class="box p-6 {box_color}">
   <div class="block columns is-vcentered is-centered ">
-	<div class="column is-text-centered ">
-	  <span class="is-size-5 is-text-centered"> {component_type} </span>
-	</div>
+    <div class="column is-text-centered ">
+      <span class="is-size-5 is-text-centered"> {component_type} </span>
+    </div>
 
-	<div class="column is-narrow">
-	  <button class="button is-fullwidth" on:click={requestScan}>
-		{#if barcode === null}
-		  Scan Barcode
-		{:else}
-		  Rescan Barcode
-		{/if}
-	  </button>
+    <div class="column is-narrow">
+      <button class="button is-fullwidth" on:click={requestScan}>
+	{#if barcode === null}
+	  Scan Barcode
+	{:else}
+	  Rescan Barcode
+	{/if}
+      </button>
     </div>
   </div>
   {#if barcode !== null || is_loading}
@@ -52,7 +52,7 @@
         <div class="control" class:is-loading={is_loading}>
           <input class="input" type="text" bind:value={barcode} readonly disabled/>
         </div>
-	  </div>
+      </div>
     </div>
   {/if}
 </div>
