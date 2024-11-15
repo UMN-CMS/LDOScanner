@@ -1,5 +1,11 @@
 # LDO
 
+## Install
+
+```bash
+npm install --dev
+```
+
 ## Developing
 
 ```bash
@@ -9,7 +15,7 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
+## Building Static Website
 
 
 ```bash
