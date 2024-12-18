@@ -1,33 +1,20 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  export let is_loading = false;
-  export let component_type;
-  export let barcode = null;
-  export let is_valid = null;
-
-  let dispatcher = createEventDispatcher();
-
-  function requestScan() {
-    console.log('HERE');
-    dispatcher('request_scan', { type: component_type });
+  let {component_type, barcode, is_valid, is_loading, request_scan_callback} = $props();
+  async function requestScan() {
+    request_scan_callback(component_type);
   }
 
-  export function reset() {
-    barcode = null;
-  }
-
-
-  let box_color = "";
-  $: {
+  let box_color = $derived.by( ()=>{
     if (barcode === null){
-      box_color = "has-background-grey-lighter";
+      return "has-background-grey-lighter";
     } else
       if (is_valid) {
-        box_color = "has-background-success-light";
+        return "has-background-success-light";
       } else {
-        box_color = "has-background-danger-light";
+        return "has-background-danger-light";
       }
-  }
+  });
+  
 </script>
 
 <div class="box p-6 {box_color}">
@@ -37,12 +24,12 @@
     </div>
 
     <div class="column is-narrow">
-      <button class="button is-fullwidth" on:click={requestScan}>
-	{#if barcode === null}
-	  Scan Barcode
-	{:else}
-	  Rescan Barcode
-	{/if}
+      <button class="button is-fullwidth" onclick={requestScan}>
+	    {#if barcode === null}
+	      Scan Barcode
+	    {:else}
+	      Rescan Barcode
+	    {/if}
       </button>
     </div>
   </div>

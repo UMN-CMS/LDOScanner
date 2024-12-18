@@ -1,26 +1,33 @@
+<!-- @migration-task Error while migrating Svelte code: `devices` has already been declared
+     https://svelte.dev/e/declaration_duplicate -->
 <script lang="ts">
   import { BrowserMultiFormatReader, BarcodeFormat, NotFoundException } from '@zxing/library';
-  import { createEventDispatcher, onMount, tick } from 'svelte';
+  import {onMount, tick } from 'svelte';
 
-  let dispatcher = createEventDispatcher();
-  let scan_type = '';
-
-  export let is_running_handler= null;
+  let {barcode_scanned_callback, is_running_callback }  = $props();
   
   const code_reader = new BrowserMultiFormatReader();
 
-  let stream = null;
+
+  let target_component = $state(null);
+  //  let is_running = $state(false);
+  let stream = $state(null);
   let track = null;
 
-  let selected_device_id = null;
-
-  let all_devices= null;
+  let is_running = $derived(stream !== null)
+  let all_devices= $state(null);
+  let selected_device_id = $state(null);
   let video_element= null;
 
-  $:  hasCamera = ()=> {
-    return all_devices === null || all_devices.length > 0 ;
-  }
+  $effect( ()=>{
+    if(is_running){
+      is_running_callback(target_component)
+    } else {
+      is_running_callback(null)
+    }
+  });
 
+  let has_camera = $derived(all_devices === null || all_devices.length > 0)
 
   async function getAllDevices() {
     if (all_devices !== null){
@@ -62,23 +69,15 @@
 
   async function startDecode() {
     await stop();
-
     [stream, track] = await makeVideoDevice(selected_device_id);
-
     await tick();
-
     const p = new Promise((resolve,reject) => code_reader.decodeFromStream(stream, 'video', (result, err) => {
-      if (result) {
-	resolve(result);
-      }
-      if (err && !(err instanceof NotFoundException)) {
-	resolve(null)
-    }}));
-
+      if (result) {resolve(result);}
+      if (err && !(err instanceof NotFoundException)) {resolve(null)}
+    }));
     const code = await p;
     await stop();
-
-    dispatcher('barcode_scanned', { request: scan_type, value: code });
+    barcode_scanned_callback(component, code);
   }
 
   export function stop() {
@@ -90,55 +89,24 @@
     }
     code_reader.reset();
   }
+  
 
   export async function start(request) {
-    if(all_devices === null){
-      all_devices = await getAllDevices();
-    }
-    if(!hasCamera()) return;
-    if (isRunning()) await stop();
-    if (selected_device_id === null){
-      selected_device_id = all_devices[0].deviceId;
-    }
-    scan_type = request;
+    if(all_devices.value === null){all_devices = await getAllDevices();}
+    if(!has_camera) return;
+    if (is_running) await stop();
+    if (selected_device_id === null){selected_device_id = all_devices[0].deviceId;}
+    target_component = request;
     startDecode();
   }
 
-
-
-  let is_running = false;
-
-  export function isRunning() {
-    const r =  (stream !== null);
-    if(is_running_handler !== null){
-      if (r){
-        is_running_handler(scan_type);
-      } else {
-        is_running_handler('');
-      }
-    }
-    return r
-
-  }
-
-  $: {
-    is_running = isRunning();
-    stream = stream;
-  }
-  
-
   export async function toggle(){
-    if (isRunning()){
-      await stop();
-    }
-    else{
-      await start(scan_type);
-    }
-    
+    if (isRunning()) { await stop(); }
+    else{ await start(scan_type); }
   }
 
 </script>
-{#if !hasCamera()}
+{#if !has_camera}
   <div class="notification is-danger is-centered">
     Could not find any usable cameras.
   </div>
@@ -156,24 +124,21 @@
         <div class="">
           <div class="select">
             <select bind:value={selected_device_id} on:change={startDecode}>
-	      {#each all_devices as device}
-		<option value={device.deviceId}>
-		  {device.label}
-		</option>
-	      {/each}	                    </select>
+	          {#each all_devices as device}
+		        <option value={device.deviceId}>
+		          {device.label}
+		        </option>
+	          {/each}	                    </select>
           </div>
         </div>
       {/if}
       {#if selected_device_id !== null}
         <div class="is-flex-grow-1"></div>
         <div class="is-narrow">
-	  <button class="button" on:click={toggle}> {is_running? "Stop" : "Start"} Decode</button>
+	      <button class="button" on:click={toggle}> {is_running? "Stop" : "Start"} Decode</button>
         </div>
       {/if}
       <div class="is-flex-grow-4"></div>
     </div>
   </div>
 {/if}
-<!-- <div>  Is Running {isRunning()}
-     </div> -->
-<!-- </main> -->
