@@ -11,6 +11,8 @@
   let scannables = new SvelteMap(config.scannables.map(x=>[x.name,x]));
   const options = {duration: 4000};
   let barcode_scanner= null;
+  const auto_submit = config.auto_submit;
+  const start_with = config.start_with;
 
   class CurrentComponentState{
     is_scanning = $state(false)
@@ -35,7 +37,9 @@
     vals.is_scanning = false;
     vals.barcode = barcode;
     vals.is_valid = scannables.get(component).valid_regex.test(barcode);
-    console.log(current_state)
+    if (auto_submit  && ok_to_submit){
+      handleSubmit();
+    }
   }
 
   function handleSubmit(){
@@ -57,6 +61,9 @@
   let ok_to_submit = $derived.by(()=>{
     return current_state.values().every((x)=>(x.barcode !== null && x.is_valid))
   });
+  if (start_with !== null){
+    handleRequestScan(start_with)
+  }
 </script>
 
 

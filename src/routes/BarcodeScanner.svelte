@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BrowserMultiFormatReader, BarcodeFormat, NotFoundException } from '@zxing/library';
+  import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
   import {onMount, tick } from 'svelte';
 
   let {barcode_scanned_callback, is_running_callback }  = $props();
@@ -14,7 +14,7 @@
   let is_running = $derived(stream !== null)
   let all_devices= $state(null);
   let selected_device_id = $state(null);
-  let video_element= null;
+  let video_element= $state(null);
 
   $effect( ()=>{
     if(is_running){
@@ -117,7 +117,7 @@
 {#if is_running  }
   <div class="columns is-centered mb-1 pb-1">
     <div class="column is-centered is-narrow ">
-      <video bind:this={video_element} class="" id="video" style="border: 1px solid gray"></video>
+      <video muted bind:this={video_element} class="" id="video" style="border: 1px solid gray"></video>
     </div>
   </div>
   <div class="block pb-3 pt-1 mt-1">
