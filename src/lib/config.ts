@@ -20,9 +20,6 @@ if (mode === "ldo_scanner"){
       const engine_barcode = values.get("Engine");
       data.append('barcode', ldo_barcode);
       data.append('full_id', engine_barcode);
-      console.log(ldo_barcode);
-      console.log(engine_barcode);
-      return 
 
       const url=  "https://cmslab1.spa.umn.edu/Factory/EngineDB/add_component.py";
       try{
