@@ -5,6 +5,7 @@
   }
 
   let box_color = $derived.by( ()=>{
+    console.log(`${barcode}`)
     if (barcode === null){
       return "has-background-grey-lighter";
     } else

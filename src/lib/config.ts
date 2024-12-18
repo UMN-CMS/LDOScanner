@@ -1,19 +1,24 @@
 export let config = {
   scannables : [
     { name: "Engine",
-      valid_regex: /320E[LH]/,
+      // valid_regex: /320E[LH]/,
+       valid_regex: /./
     },
     { name: "LDO",
-      valid_regex: /LDO/,
+      // valid_regex: /LDO/,
+       valid_regex: /./
     }
   ],
   submission_function : async (values, toaster) => {
     console.log(values);
     const data = new FormData();
-    const ldo_barcode = values.LDO;
-    const engine_barcode = values.Engine;
+    const ldo_barcode = values.get("LDO");
+    const engine_barcode = values.get("Engine");
     data.append('barcode', ldo_barcode);
     data.append('full_id', engine_barcode);
+    console.log(ldo_barcode);
+    console.log(engine_barcode);
+    return 
 
     const url=  "https://cmslab1.spa.umn.edu/Factory/EngineDB/add_component.py";
     try{
