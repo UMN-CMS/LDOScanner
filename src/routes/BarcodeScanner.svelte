@@ -69,12 +69,10 @@
     await stop();
     [stream, track] = await makeVideoDevice(selected_device_id);
     await tick();
-    console.log("Starting decode");
     const p = new Promise((resolve,reject) => code_reader.decodeFromStream(stream, 'video', (result, err) => {
       if (result) {resolve(result);}
       if (err && !(err instanceof NotFoundException)) {resolve(null)}
     }));
-    console.log("Wating for decode");
     const code = await p;
     await stop();
     barcode_scanned_callback(target_component, code);
@@ -82,7 +80,6 @@
 
   export async function stop() {
     if (stream !== null) {
-      console.log("Stopping stream")
       stream.getTracks().forEach(async (track) => await track.stop());
       await track.stop();
       stream = null;

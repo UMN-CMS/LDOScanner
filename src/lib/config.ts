@@ -1,17 +1,16 @@
 export let config = {};
 const mode="ldo_scanner";
+
 if (mode === "ldo_scanner"){
   config = {
     start_with: null,
     auto_submit: false,
     scannables : [
       { name: "Engine",
-        // valid_regex: /320E[LH]/,
-        valid_regex: /./
+        valid_regex: /320E[LH]/,
       },
       { name: "LDO",
-        // valid_regex: /LDO/,
-        valid_regex: /./
+        valid_regex: /LDO/,
       }
     ],
     submission_function : async (values, toaster) => {

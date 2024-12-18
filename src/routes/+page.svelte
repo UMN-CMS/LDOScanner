@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Expected 'if', 'each', 'await', 'key' or 'snippet'
-     https://svelte.dev/e/expected_block_type -->
 <script lang="ts">
   import {onMount} from 'svelte';
   import BarcodeBox from './BarcodeBox.svelte';
@@ -24,14 +22,13 @@
     }
   };
 
-  let current_state = new SvelteMap(scannables.entries().map(([k,v])=>[k,new CurrentComponentState(k)]));
+  let current_state = new SvelteMap(Array.from(scannables.entries()).map(([k,v])=>[k,new CurrentComponentState(k)]));
 
   async function handleRequestScan(component) {
     await barcode_scanner.start(component);
   }
 
   function handleScanned(component, value) {
-    console.log(component)
     const vals =  current_state.get(component);
     const barcode = value.text
     vals.is_scanning = false;
@@ -45,25 +42,25 @@
   function handleSubmit(){
     if(!ok_to_submit) return;
     const ok = config.submission_function(
-      new Map(current_state.entries().map(([k,v])=>[k,v.barcode]))
+      new Map(Array.from(current_state.entries()).map(([k,v])=>[k,v.barcode]))
     );
   }
 
   function isRunningHandler(target){
-    console.log(`Updating is running state`)
     for(let [k,v] of current_state.entries()){
       if(k === target) v.is_scanning=true;
       else v.is_scanning=false;
     }
-    console.log(current_state)
   }
 
   let ok_to_submit = $derived.by(()=>{
-    return current_state.values().every((x)=>(x.barcode !== null && x.is_valid))
+    return Array.from(current_state.values()).every((x)=>(x.barcode !== null && x.is_valid))
   });
+
   if (start_with !== null){
     handleRequestScan(start_with)
   }
+
 </script>
 
 
