@@ -70,6 +70,16 @@ if (mode === "simple_finder"){
     submission_function : async (values, toaster) => {
       const data = new FormData();
       const full_id = values.get("Board");
+      const engine_re =/^320E[LH]/;
+      const wagon_re =/^320W[EWH]/;
+      const engine_url = "http://cmslab1.spa.umn.edu/Factory/EngineDB/module.py?full_id="
+      const wagon_url = "http://cmslab1.spa.umn.edu/Factory/WagonDB/module.py?full_id="
+      if(engine_re.test(full_id)){
+        window.location = engine_url + full_id;
+      }
+      if(wagon_re.test(full_id)){
+        window.location = wagon_url + full_id;
+      }
     },
   };
 

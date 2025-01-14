@@ -42,7 +42,8 @@
   function handleSubmit(){
     if(!ok_to_submit) return;
     const ok = config.submission_function(
-      new Map(Array.from(current_state.entries()).map(([k,v])=>[k,v.barcode]))
+      new Map(Array.from(current_state.entries()).map(([k,v])=>[k,v.barcode])),
+      toast
     );
   }
 
@@ -57,9 +58,11 @@
     return Array.from(current_state.values()).every((x)=>(x.barcode !== null && x.is_valid))
   });
 
-  if (start_with !== null){
-    handleRequestScan(start_with)
-  }
+  onMount( ()=>{
+    if (start_with !== null){
+      handleRequestScan(start_with)
+    }
+  })
 
 </script>
 
