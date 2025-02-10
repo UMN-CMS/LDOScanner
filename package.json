@@ -30,8 +30,10 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
+		"@bwip-js/browser": "^4.5.1",
+		"@zerodevx/svelte-toast": "^0.9.6",
 		"@zxing/library": "^0.21.3",
 		"bulma": "^1.0.2",
-		"@zerodevx/svelte-toast": "^0.9.6"
+		"bwip-js": "^4.5.1"
 	}
 }

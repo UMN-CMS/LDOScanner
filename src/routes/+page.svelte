@@ -25,15 +25,20 @@
   let current_state = new SvelteMap(Array.from(scannables.entries()).map(([k,v])=>[k,new CurrentComponentState(k)]));
 
   async function handleRequestScan(component) {
+    if( config.on_scan_callback){
+      await config.on_scan_callback();
+    }
     await barcode_scanner.start(component);
   }
 
   function handleScanned(component, value) {
     const vals =  current_state.get(component);
-    const barcode = value.text
+    const barcode = value
+    console.log(vals)
+    console.log(value)
     vals.is_scanning = false;
     vals.barcode = barcode;
-    vals.is_valid = scannables.get(component).valid_regex.test(barcode);
+    vals.is_valid = scannables.get(component).valid_regex.test(barcode.text);
     if (auto_submit  && ok_to_submit){
       handleSubmit();
     }
@@ -69,6 +74,10 @@
 
 <main>
   <SvelteToast {options}/>
+  <div class="block columns is-centered is-justify-content-space-around">
+    <div id="user-element" class="is-narrow column">
+    </div>
+  </div>
   <section class="section">
     <div class="">
       <BarcodeScanner
