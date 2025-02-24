@@ -75,7 +75,7 @@
 <main>
   <SvelteToast {options}/>
   <div class="block columns is-centered is-justify-content-space-around">
-    <div id="user-element" class="is-narrow column">
+    <div id="user-element" class="is-narrow has-text-centered column">
     </div>
   </div>
   <section class="section">
