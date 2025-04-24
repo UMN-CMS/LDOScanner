@@ -16,6 +16,82 @@
   let selected_device_id = $state(null);
   let video_element= $state(null);
 
+
+  let event_cache = []
+  let prev_diff = -1
+
+  async function zoomTrackTo(track, value){
+    try {
+      const capabilities = track.getCapabilities();
+      const max = capabilities["zoom"]["max"];
+      const constraints = {advanced: [{"zoom": value}]};
+      await track.applyConstraints(constraints);
+    } catch (err) {
+      console.error('applyConstraints() failed: ', err);
+    }
+  }
+
+  async function zoomTrackBy(value){
+    try {
+      const capabilities = track.getCapabilities();
+      const constraints = {advanced: [{"zoom": value}]};
+      await track.applyConstraints(constraints);
+    } catch (err) {
+      console.error('applyConstraints() failed: ', err);
+    }
+  }
+
+
+  function onPointerDown(ev){
+    event_cache.push(ev);
+  }
+
+  function log(prefix, ev) {
+    const o = document.getElementsByTagName("output")[0];
+    console.log(`${prefix}:
+  pointerID   = ${ev.pointerId}
+  pointerType = ${ev.pointerType}
+  isPrimary   = ${ev.isPrimary}
+    `);
+  }
+
+  function onPointerMove(ev) {
+    const index = event_cache.findIndex(
+      (cache_ev) => cache_ev.pointerId === ev.pointerId,
+    );
+    event_cache[index] = ev;
+    if (event_cache.length === 2) {
+      const cur_diff = Math.abs(event_cache[0].clientX - event_cache[1].clientX);
+      if (prev_diff > 0) {
+        if (cur_diff > prev_diff) {
+          log("Pinch moving OUT -> Zoom in", ev);
+        }
+        if (cur_diff < prev_diff) {
+          log("Pinch moving IN -> Zoom out", ev);
+        }
+      }
+      prev_diff = cur_diff;
+    }
+  }
+
+  function removeEvent(ev) {
+    const index = event_cache.findIndex(
+      (cach_ev) => cach_ev.pointerId === ev.pointerId,
+    );
+    event_cache.splice(index, 1);
+  }
+
+
+  function onPointerUp(ev) {
+    log(ev.type, ev);
+    removeEvent(ev);
+    if (event_cache.length < 2) {
+      prev_diff = -1;
+    }
+  }
+
+
+
   $effect( ()=>{
     if(is_running){
       is_running_callback(target_component)
@@ -43,24 +119,14 @@
   }
 
 
-  async function zoomTrackTo(track, value){
-    try {
-      const capabilities = track.getCapabilities();
-      const max = capabilities["zoom"]["max"];
-      const constraints = {advanced: [{"zoom": max}]};
-      await track.applyConstraints(constraints);
-    } catch (err) {
-      console.error('applyConstraints() failed: ', err);
-    }
-  }
-
 
   async function makeVideoDevice(device_id) {
     const video_constraints = { deviceId: { exact: selected_device_id } };
     const constraints = { video: video_constraints };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     const [track] = await stream.getVideoTracks();
-    // await zoomTrackTo(track, 3.0);
+    console.log(track)
+    await zoomTrackTo(track, 3.0);
     return [stream, track];
   }
 
@@ -114,7 +180,11 @@
 {#if is_running  }
   <div class="columns is-centered mb-1 pb-1">
     <div class="column is-centered is-narrow ">
-      <video muted bind:this={video_element} class="" id="video" style="border: 1px solid gray"></video>
+      <video
+        onpointerup={onPointerUp}
+        onpointerdown={onPointerDown}
+        onpointermove={onPointerMove}
+        muted bind:this={video_element} class="" id="video" style="border: 1px solid gray"></video>
     </div>
   </div>
   <div class="block pb-3 pt-1 mt-1">
