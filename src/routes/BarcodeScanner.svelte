@@ -32,7 +32,7 @@
   let video_element= $state(null)
   let min_zoom = $state(0.5)
   let max_zoom = $state(10)
-  let current_zoom=$state(1)
+  let current_zoom=$state(3.0)
 
 
   let event_cache = [];
@@ -136,7 +136,7 @@
     [track] = await stream.getVideoTracks();
     max_zoom = track.getCapabilities()["zoom"]["max"];
     min_zoom = track.getCapabilities()["zoom"]["min"];
-    current_zoom = 3.0;
+    zoomTrack(current_zoom);
     return [stream, track];
   }
 
@@ -253,7 +253,7 @@
     </div>
     {#if min_zoom !== null }
       <div class="column is-centered is-narrow">
-        <div class="block container is-fullwidth is-flex">
+        <div class="block is-fullwidth is-flex">
           <input class ="slider is-flex-grow-1" type="range" step="0.1" min="{min_zoom}" max="{max_zoom}" bind:value={current_zoom} />
         </div>
       </div>
@@ -270,7 +270,8 @@
 		        <option value={device.deviceId}>
 		          {device.label}
 		        </option>
-	          {/each}	                    </select>
+	          {/each}
+            </select>
           </div>
         </div>
       {/if}
