@@ -2,7 +2,7 @@ export let config = {};
 import bwipjs from 'bwip-js';
 import { BarcodeFormat } from '@zxing/library';
 
-let APPLICATION_MODE="simple_finder";
+let APPLICATION_MODE="rerender";
 
 const type_mapping = new Map(
   [[BarcodeFormat.AZTEC, 0],

@@ -1,4 +1,6 @@
 <script lang="ts">
+
+
   import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
   import {onMount, tick } from 'svelte';
 
@@ -6,53 +8,66 @@
   
   const code_reader = new BrowserMultiFormatReader();
 
+  function getMethods(obj) {
+    var result = [];
+    for (var id in obj) {
+      try {
+        if (typeof(obj[id]) == "function") {
+          result.push(id + ": " + obj[id].toString());
+        }
+      } catch (err) {
+        result.push(id + ": inaccessible");
+      }
+    }
+    return result;
+  }
+
 
   let target_component = $state(null);
-  //  let is_running = $state(false);
   let stream = $state(null);
   let track = null;
   let is_running = $derived(stream !== null)
   let all_devices= $state(null);
   let selected_device_id = $state(null);
-  let video_element= $state(null);
+  let video_element= $state(null)
+  let min_zoom = $state(0.5)
+  let max_zoom = $state(10)
+  let current_zoom=$state(1)
 
 
-  let event_cache = []
-  let prev_diff = -1
+  let event_cache = [];
+  let prev_diff = -1;
+  let to_print = $state(null);
+  let to_print_2 = $state(null);
 
-  async function zoomTrackTo(track, value){
+
+  function clampZoom(value){
+    return Math.min(Math.max(value, min_zoom), max_zoom);
+  }
+
+  async function zoomTrack(value){
     try {
-      const capabilities = track.getCapabilities();
-      const max = capabilities["zoom"]["max"];
-      const constraints = {advanced: [{"zoom": value}]};
+      const constraints = {advanced: [{"zoom": current_zoom}]};
       await track.applyConstraints(constraints);
     } catch (err) {
       console.error('applyConstraints() failed: ', err);
+      to_print_2 = `${JSON.stringify(track, null, 2)} -- ${track} -- ${track.applyConstraints} -- ${err}`
     }
   }
+
+  $effect(
+    () => {
+      if(is_running){zoomTrack(current_zoom);}
+    } 
+  )
 
   async function zoomTrackBy(value){
-    try {
-      const capabilities = track.getCapabilities();
-      const constraints = {advanced: [{"zoom": value}]};
-      await track.applyConstraints(constraints);
-    } catch (err) {
-      console.error('applyConstraints() failed: ', err);
-    }
+    current_zoom = clampZoom(current_zoom + value);
   }
-
 
   function onPointerDown(ev){
     event_cache.push(ev);
-  }
-
-  function log(prefix, ev) {
-    const o = document.getElementsByTagName("output")[0];
-    console.log(`${prefix}:
-  pointerID   = ${ev.pointerId}
-  pointerType = ${ev.pointerType}
-  isPrimary   = ${ev.isPrimary}
-    `);
+    // ev.target.style["border-color"] = "red";
   }
 
   function onPointerMove(ev) {
@@ -61,14 +76,10 @@
     );
     event_cache[index] = ev;
     if (event_cache.length === 2) {
-      const cur_diff = Math.abs(event_cache[0].clientX - event_cache[1].clientX);
+      let cur_diff = Math.abs(event_cache[0].clientX - event_cache[1].clientX);
       if (prev_diff > 0) {
-        if (cur_diff > prev_diff) {
-          log("Pinch moving OUT -> Zoom in", ev);
-        }
-        if (cur_diff < prev_diff) {
-          log("Pinch moving IN -> Zoom out", ev);
-        }
+        if (cur_diff > prev_diff) {zoomTrackBy(0.1);}
+        if (cur_diff < prev_diff) {zoomTrackBy(-0.1);}
       }
       prev_diff = cur_diff;
     }
@@ -81,9 +92,7 @@
     event_cache.splice(index, 1);
   }
 
-
   function onPointerUp(ev) {
-    log(ev.type, ev);
     removeEvent(ev);
     if (event_cache.length < 2) {
       prev_diff = -1;
@@ -123,17 +132,20 @@
   async function makeVideoDevice(device_id) {
     const video_constraints = { deviceId: { exact: selected_device_id } };
     const constraints = { video: video_constraints };
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const [track] = await stream.getVideoTracks();
-    console.log(track)
-    await zoomTrackTo(track, 3.0);
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    [track] = await stream.getVideoTracks();
+    max_zoom = track.getCapabilities()["zoom"]["max"];
+    min_zoom = track.getCapabilities()["zoom"]["min"];
+    current_zoom = 3.0;
     return [stream, track];
   }
 
-
   async function startDecode() {
     await stop();
-    [stream, track] = await makeVideoDevice(selected_device_id);
+
+    // [stream, track] = await makeVideoDevice(selected_device_id);
+    await makeVideoDevice(selected_device_id);
+
     await tick();
     const p = new Promise((resolve,reject) => code_reader.decodeFromStream(stream, 'video', (result, err) => {
       if (result) {resolve(result);}
@@ -171,21 +183,81 @@
     else{ await start(scan_type); }
   }
 
+
+
+
 </script>
+
+<style>
+
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 10px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    border-radius: 2px;
+  }
+
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 10px; /* Set a specific slider handle width */
+    height: 10px; /* Slider handle height */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+    border-radius: 2px;
+    border-width: 0;
+  }
+
+  .slider::-moz-range-thumb {
+    width: 10px; /* Set a specific slider handle width */
+    height: 10px; /* Slider handle height */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+    border-radius: 2px;
+    border-width: 0;
+  }
+</style>
+
+
+
 {#if !has_camera}
   <div class="notification is-danger is-centered">
     Could not find any usable cameras.
   </div>
 {/if}
-{#if is_running  }
+<span> {to_print_2} </span>
+{#if is_running  || true}
   <div class="columns is-centered mb-1 pb-1">
+    <span> {to_print} </span>
     <div class="column is-centered is-narrow ">
       <video
         onpointerup={onPointerUp}
         onpointerdown={onPointerDown}
         onpointermove={onPointerMove}
-        muted bind:this={video_element} class="" id="video" style="border: 1px solid gray"></video>
+        muted bind:this={video_element} class="" id="video" style="touch-action: none">
+
+      </video>
     </div>
+    {#if min_zoom !== null }
+      <div class="column is-centered is-narrow">
+        <div class="block container is-fullwidth is-flex">
+          <input class ="slider is-flex-grow-1" type="range" step="0.1" min="{min_zoom}" max="{max_zoom}" bind:value={current_zoom} />
+        </div>
+      </div>
+    {/if}
   </div>
   <div class="block pb-3 pt-1 mt-1">
     <div class="is-full-width is-flex is-flex-direction-row is-align-content-space-around is-align-items-stretch is-justify-content-space-around">
