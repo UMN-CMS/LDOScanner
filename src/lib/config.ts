@@ -137,9 +137,9 @@ if (APPLICATION_MODE === "ldo_scanner"){
         bwipjs.toCanvas(canvas, {
           bcid:        type_mapping.get(values.get("Code").format),       // Barcode type
           text:        values.get("Code").text,    // Text to encode
-          scale:       5,               // 3x scaling factor
-          height:      10,              // Bar height, in millimeters
-          width:       10,
+          scale:       3,               // 3x scaling factor
+          // height:      10,              // Bar height, in millimeters
+          // width:       10,
           includetext: true,            // Show human-readable text
           textxalign:  'center',        // Always good to set this
         });
