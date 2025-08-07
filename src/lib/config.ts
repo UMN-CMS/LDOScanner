@@ -5,22 +5,22 @@ import { BarcodeFormat } from '@zxing/library';
 let APPLICATION_MODE="rerender";
 
 const type_mapping = new Map(
-  [[BarcodeFormat.AZTEC, 0],
-   [BarcodeFormat.CODABAR, 1],
-   [BarcodeFormat.CODE_128, 4],
-   [BarcodeFormat.CODE_39, 2],
-   [BarcodeFormat.CODE_93, 3],
+  [[BarcodeFormat.AZTEC, "azteccode"],
+   [BarcodeFormat.CODABAR, "rationalizedCodabar"],
+   [BarcodeFormat.CODE_128, "code128"],
+   [BarcodeFormat.CODE_39, "code39"],
+   [BarcodeFormat.CODE_93, "code93"],
    [BarcodeFormat.DATA_MATRIX, "datamatrix"],
-   [BarcodeFormat.EAN_13, 7],
-   [BarcodeFormat.EAN_8, 6],
-   [BarcodeFormat.ITF, 8],
-   [BarcodeFormat.MAXICODE, 9],
-   [BarcodeFormat.PDF_417, 10],
+   [BarcodeFormat.EAN_13, "ean13"],
+   [BarcodeFormat.EAN_8, "ean8"],
+   [BarcodeFormat.ITF, "itf14"],
+   [BarcodeFormat.MAXICODE, "maxicode"],
+   [BarcodeFormat.PDF_417, "pdf417"],
    [BarcodeFormat.QR_CODE, "qrcode"],
-   [BarcodeFormat.RSS_14, 12],
-   [BarcodeFormat.RSS_EXPANDED, 13],
-   [BarcodeFormat.UPC_A, 14],
-   [BarcodeFormat.UPC_E, 15]]);
+   // [BarcodeFormat.RSS_14, 12],
+   // [BarcodeFormat.RSS_EXPANDED, 13],
+   [BarcodeFormat.UPC_A, "upca"],
+   [BarcodeFormat.UPC_E, "upce"]]);
 
 
 if (APPLICATION_MODE === "ldo_scanner"){
@@ -124,10 +124,10 @@ if (APPLICATION_MODE === "ldo_scanner"){
       console.log(values);
       console.log(BarcodeFormat);
 
-        const nok_opts = {theme: {
-          "--toastBackground" : "var(--bulma-danger)",
-          "--toastColor" : "var(--bulma-text)",
-        }};
+      const nok_opts = {theme: {
+        "--toastBackground" : "var(--bulma-danger)",
+        "--toastColor" : "var(--bulma-text)",
+      }};
 
       const elem = document.getElementById("user-element");
       const canvas = document.createElement("canvas")
