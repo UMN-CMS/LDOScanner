@@ -27,6 +27,7 @@ if (APPLICATION_MODE === "ldo_scanner"){
   config = {
     start_with: null,
     auto_submit: false,
+    clear_after_read: true,
     scannables : [
       { name: "Engine",
         valid_regex: /320E[LH]/,
@@ -82,6 +83,7 @@ if (APPLICATION_MODE === "ldo_scanner"){
   config = {
     start_with: "Board",
     auto_submit: true,
+    clear_after_read: true,
     scannables : [
       { name: "Board",
         valid_regex: /320(E[LH]|ZP|W[HWE])/,
@@ -106,6 +108,7 @@ if (APPLICATION_MODE === "ldo_scanner"){
   config = {
     start_with: "Code",
     auto_submit: true,
+    clear_after_read: false,
     scannables : [
       { name: "Code",
         valid_regex: /.+/,

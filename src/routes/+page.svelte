@@ -24,6 +24,12 @@
 
   let current_state = new SvelteMap(Array.from(scannables.entries()).map(([k,v])=>[k,new CurrentComponentState(k)]));
 
+  function clearState(){
+    for(let k in current_state){
+      current_state[k] = null;
+    }
+  }
+
   async function handleRequestScan(component) {
     if( config.on_scan_callback){
       await config.on_scan_callback();
@@ -50,6 +56,9 @@
       new Map(Array.from(current_state.entries()).map(([k,v])=>[k,v.barcode])),
       toast
     );
+    if(ok && config.clear_after_read){
+      clearState();
+    }
   }
 
   function isRunningHandler(target){
