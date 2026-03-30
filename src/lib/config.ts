@@ -2,7 +2,7 @@ export let config = {};
 import bwipjs from 'bwip-js';
 import { BarcodeFormat } from '@zxing/library';
 
-let APPLICATION_MODE="rerender";
+let APPLICATION_MODE="simple_finder";
 
 const type_mapping = new Map(
   [[BarcodeFormat.AZTEC, "azteccode"],
@@ -93,7 +93,7 @@ if (APPLICATION_MODE === "ldo_scanner"){
       const data = new FormData();
       const full_id = values.get("Board");
       const engine_re =/^320E[LH]/;
-      const wagon_re =/^320/;
+      const wagon_re =/^320[WZ]/;
       const engine_url = "http://cmslab1.spa.umn.edu/Factory/EngineDB/module.py?full_id="
       const wagon_url = "http://cmslab1.spa.umn.edu/Factory/WagonDB/module.py?full_id="
       if(engine_re.test(full_id)){
